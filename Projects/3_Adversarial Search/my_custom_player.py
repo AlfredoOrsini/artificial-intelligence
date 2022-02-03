@@ -46,7 +46,10 @@ class CustomPlayer(DataPlayer):
         if state.ply_count<=2:
             self.queue.put(random.choice(state.actions()))
         else:
-            self.queue.put(self.minimax(state, depth=3))
+            i=1
+            while True:
+                self.queue.put(self.minimax(state, i))
+                i+=1
 
     def minimax(self, state, depth):
 
