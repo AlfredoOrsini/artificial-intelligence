@@ -1,6 +1,6 @@
 
 from sample_players import DataPlayer
-
+from isolation.isolation import _SIZE
 
 class CustomPlayer(DataPlayer):
     """ Implement your own agent to play knight's Isolation
@@ -86,4 +86,5 @@ class CustomPlayer(DataPlayer):
         opp_loc = state.locs[1 - self.player_id]
         own_liberties = state.liberties(own_loc)
         opp_liberties = state.liberties(opp_loc)
-        return len(own_liberties) - len(opp_liberties)
+        if state.ply_count/_SIZE<0.5: return len(own_liberties) - 2 * len(opp_liberties)
+        else : return 2 * len(own_liberties) - len(opp_liberties)
