@@ -48,32 +48,38 @@ class CustomPlayer(DataPlayer):
         else:
             i=1
             while True:
-                self.queue.put(self.minimax(state, i))
+                self.queue.put(self.negamax(state, i))
                 i+=1
 
-    def minimax(self, state, depth):
+    def negamax(self, state, depth):
+        '''
+        Parameters
+        ----------
+        state : Isolation
+            The state of an Isolation gameboard.
+        depth : integer
+            the max depth that we are willing to search.
 
-        def min_value(state, a, b, depth):
-            if state.terminal_test(): return state.utility(self.player_id)
-            if depth <= 0: return self.score(state)
-            value = float("inf")
-            for action in sorted(state.actions(), key=lambda x: self.score(state.result(x))):
-                value = min(value, max_value(state.result(action), a, b, depth - 1))
-                if value<=a: return value
-                b=min(b,value)
-            return value
+        Returns
+        -------
+        An action
+            The action with the max value (searching at that depth).
 
-        def max_value(state, a, b, depth):
-            if state.terminal_test(): return state.utility(self.player_id)
-            if depth <= 0: return self.score(state)
-            value = float("-inf")
-            for action in sorted(state.actions(), key=lambda x: self.score(state.result(x)), reverse=True):
-                value = max(value, min_value(state.result(action), a, b, depth - 1))
-                if value>=b: return value
+        '''
+
+        def nega_max(state, a, b, depth, player):
+            if state.terminal_test() : return state.utility(self.player_id) * player
+
+            if depth <= 0 : return self.score(state) * player
+
+            value = float('-inf')
+            for action in sorted(state.actions(), key=lambda x: self.score(state.result(x)), reverse=player==1):
+                value = max(value, -nega_max(state.result(action),-b, -a, depth-1, -player))
                 a=max(a,value)
+                if a>=b: return value
             return value
 
-        return max(state.actions(), key=lambda x: min_value(state.result(x), float('-inf'), float('inf'), depth - 1))
+        return max(state.actions(), key=lambda x: -nega_max(state.result(x), float('-inf'), float('inf'), depth - 1, -1))
 
     def score(self, state):
         own_loc = state.locs[self.player_id]
